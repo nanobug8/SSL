@@ -44,4 +44,4 @@ if __name__=="__main__":
     ssl_4 = Delantero("PunteroDerecho")
     ssl_5 = Delantero("PunteroIzquierdo")
 
-ssl_2.soccer_pass()
+    ssl_2.soccer_pass()
