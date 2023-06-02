@@ -34,6 +34,7 @@ class Delantero(Player):
         '''
 
     def shoot(self):
+        #llamado a findgoal
         print("Tirar al arco")
 
 
