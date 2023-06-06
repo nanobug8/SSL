@@ -1,4 +1,5 @@
 #! /usr/bin/env python3
+import math
 
 import rospy
 import numpy as np
@@ -7,6 +8,7 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from grsim_ros_bridge_msgs.msg import *
 from krssg_ssl_msgs.msg import *
+from Player import Referi
 
 
 vision = SSL_DetectionFrame()
@@ -41,13 +43,39 @@ def vision_callback(data):
     # print(data.camera_id)
 
 
+def obtener_orientacion(actual_x, actual_y, destino_x, destino_y):
+    # Calcular la diferencia en coordenadas x e y
+    diff_x = destino_x - actual_x
+    diff_y = destino_y - actual_y
+
+    # Calcular el ángulo de orientación utilizando la función atan2
+    orientacion = np.arctan2(diff_y, diff_x)
+
+    # Converti el ángulo de radianes a grados
+    #orientacion_grados = math.degrees(orientacion)
+
+    print('orientacion', orientacion)
+
+    return orientacion
+
+
+def calcular_angulo_giro(orientacion_actual, orientacion_arco):
+    # Calcular la diferencia angular entre la orientación actual y la orientación deseada
+    angulo_giro = orientacion_arco - orientacion_actual
+
+    # Asegurarse de que el ángulo de giro esté en el rango de -180 a 180 grados
+    #angulo_giro = (angulo_giro + 180) % 360 - 180
+
+    print('angulo_giro', angulo_giro)
+    return angulo_giro
+
+
 if __name__ == '__main__':
     rospy.init_node("stage_controller_node", anonymous = False)
 
     rospy.Subscriber("/vision", SSL_DetectionFrame, vision_callback)
 
     publisher = rospy.Publisher("/robot_blue_0/cmd", SSL, queue_size = 10)
-
 
     rate = rospy.Rate(10)
     msg = SSL()
@@ -61,9 +89,11 @@ if __name__ == '__main__':
     angle = 0
     dist = 1000
 
-    angle_tol = 0.12
+    angle_tol = 0.06
 
     state = 0
+
+    #referi = Referi("Referi")
 
     while not rospy.is_shutdown():
 
@@ -73,7 +103,7 @@ if __name__ == '__main__':
 
         # print(robot_ang)
         # print(angle)
-        print(angle, robot_ang, angle - robot_ang)
+        #print(angle, robot_ang, angle - robot_ang)
 
         if state == 0:
 
@@ -117,16 +147,25 @@ if __name__ == '__main__':
         elif state == 2:
 
             # print("state ", robot_ang)
-            
-            if current_angle > 0:
-                msg.cmd_vel.angular.z = - 0.7
-            else:
-                msg.cmd_vel.angular.z = 0.7
+            orientacion_arco=obtener_orientacion(robot_x,robot_y,2000,0)
+            giro = calcular_angulo_giro(robot_ang,orientacion_arco)
 
+            msg.cmd_vel.angular.z = giro
+
+            if abs(giro < angle_tol):
+                state = 3
+            '''
+            if np.abs(current_angle - giro) > angle_tol:
+                msg.cmd_vel.angular.z = giro + giro/math.pi
+            else:
+                msg.cmd_vel.angular.z =  giro/math.pi - giro
 
             if (np.abs(current_angle - robot_ang) > 3*np.random.rand()):
                 msg.cmd_vel.angular.z = 0.0
                 state = 3
+            '''
+
+
 
         elif state == 3:
             # print("state ", state)

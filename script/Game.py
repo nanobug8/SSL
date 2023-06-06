@@ -45,3 +45,4 @@ if __name__=="__main__":
     ssl_5 = Delantero("PunteroIzquierdo")
 
     ssl_2.soccer_pass()
+    ssl_4.find_goal()
