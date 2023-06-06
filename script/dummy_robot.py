@@ -152,7 +152,7 @@ if __name__ == '__main__':
 
             msg.cmd_vel.angular.z = giro
 
-            if abs(giro < angle_tol):
+            if abs(robot_ang - orientacion_arco) < angle_tol:
                 state = 3
             '''
             if np.abs(current_angle - giro) > angle_tol:
