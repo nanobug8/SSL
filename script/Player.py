@@ -13,84 +13,6 @@ from krssg_ssl_msgs.msg import *
 vision = SSL_DetectionFrame()
 
 class Player:
-<<<<<<< HEAD
-
-    orientacion_arco = 0
-    def _init_(self, nombre):
-        self.nombre = nombre
-
-    def defend(self):
-        print("Posicionarse frente a la pelota, e ir hacia ella")
-
-    def soccer_pass(self):
-        print("Hacer un pase al compa")
-
-    def positioning(self):
-        print("Posicionarse")
-
-    def drive_to_goal(self,robot_x,robot_y,robot_ang):
-        print("Ir hacia el arco")
-        orientacion_arco=obtener_orientacion(robot_x,robot_y,2000,0)
-        giro = calcular_angulo_giro(robot_ang,orientacion_arco)
-
-
-        return giro
-
-
-    def shoot(self):
-        #llamado a findgoal
-        print("Tirar al arco")
-
-
-def obtener_orientacion(actual_x, actual_y, destino_x, destino_y):
-    # Calcular la diferencia en coordenadas x e y
-    diff_x = destino_x - actual_x
-    diff_y = destino_y - actual_y
-
-    # Calcular el ángulo de orientación utilizando la función atan2
-    orientacion = np.arctan2(diff_y, diff_x)
-
-    # Converti el ángulo de radianes a grados
-    #orientacion_grados = math.degrees(orientacion)
-
-    print('orientacion', orientacion)
-
-    return orientacion
-
-def calcular_angulo_giro(orientacion_actual, orientacion_arco):
-    # Calcular la diferencia angular entre la orientación actual y la orientación deseada
-    angulo_giro = orientacion_arco - orientacion_actual
-
-    # Asegurarse de que el ángulo de giro esté en el rango de -180 a 180 grados
-    #angulo_giro = (angulo_giro + 180) % 360 - 180
-
-    print('angulo_giro', angulo_giro)
-    return angulo_giro
-
-
-class Referi(Player):
-
-    golesAmarillo = 0
-    golesAzul = 0
-    def tanteador(self):
-        print(self.golesAmarillo," - ",self.golesAzul)
-
-
-    def is_yellow_goal(x1_y, y1_y, x2_y, y2_y, x3_y, y3_y, x4_y, y4_y):
-        if min(x1_y, x2_y, x3_y, x4_y) <= vision.balls[0].x <= max(x1_y, x2_y, x3_y, x4_y) and \
-                min(y1_y, y2_y, y3_y, y4_y) <= vision.balls[0].y<= max(y1_y, y2_y, y3_y, y4_y):
-            print("Goooooooooooooooooooooool Amarillo")
-
-
-    def is_blue_goal(x1_b, y1_b, x2_b, y2_b, x3_b, y3_b, x4_b, y4_b):
-        if min(x1_b, x2_b, x3_b, x4_b) <= vision.balls[0].x <= max(x1_b, x2_b, x3_b, x4_b) and \
-                min(y1_b, y2_b, y3_b, y4_b) <= vision.balls[0].y <= max(y1_b, y2_b, y3_b, y4_b):
-            print("Goooooooooooooooooooooool Azul")
-
-
-
-
-=======
     def __init__(self,id):
         self.pub = rospy.Publisher("/robot_blue_0/cmd", SSL, queue_size = 10)
         self.vision_sub = rospy.Subscriber("/vision", SSL_DetectionFrame, self.vision_callback)
@@ -129,7 +51,7 @@ class Referi(Player):
 
         if np.abs(self.ball_y - self.y) > 0:
             self.ball_angle = np.arctan2((self.ball_y - self.y), (self.ball_x - self.x))
-            self.ball_dist = np.sqrt(np.abs(self.ball_x - self.x)**2 + np.abs(self.ball_y - self.y)**2)
+            self.ball_dist = np.sqrt(np.abs(self.ball_x - self.x)**2 + np.abs(self.ball_y - self.y)**2) 
 
         if np.abs(self.goal_y - self.y) > 0:
             self.goal_angle = np.arctan2((self.goal_y - self.y), (self.goal_x - self.x))
@@ -159,10 +81,10 @@ class Referi(Player):
             self.state = 1
             # if msg.cmd_vel.angular.z == 0.0:
             #     state = 1
-
+        
         self.pub.publish(self.msg)
 
-
+    
     def drive_to_goal(self):
 
         if (np.abs(self.goal_angle - self.yaw) > self.angle_tolerance):
@@ -191,7 +113,6 @@ if __name__ == '__main__':
     player = Player(0)
 
     rate = rospy.Rate(10)
-
+    
     while not rospy.is_shutdown():
         rate.sleep()
->>>>>>> origin/master
