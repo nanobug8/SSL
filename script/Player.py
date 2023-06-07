@@ -85,8 +85,8 @@ class Player:
         if self.state == 0:
             self.get_the_ball()
         elif self.state == 1:
-            #self.drive_to_goal()
-            self.pass_to_mate()
+            self.drive_to_goal()
+            # self.pass_to_mate()
         elif self.state == 2:
             self.move_without_ball()
 
