@@ -14,48 +14,59 @@ from krssg_ssl_msgs.msg import *
 vision = SSL_DetectionFrame()
 
 class Player:
-    def __init__(self, nombre):
-        self.nombre = nombre
 
-class Defensa(Player):
+    orientacion_arco = 0
+    def _init_(self, nombre):
+        self.nombre = nombre
 
     def defend(self):
         print("Posicionarse frente a la pelota, e ir hacia ella")
+
     def soccer_pass(self):
         print("Hacer un pase al compa")
 
+    def positioning(self):
+        print("Posicionarse")
 
-class Delantero(Player):
-    def find_goal(self):
-        print("Encontrar la posicion del arco")
+    def drive_to_goal(self,robot_x,robot_y,robot_ang):
+        print("Ir hacia el arco")
+        orientacion_arco=obtener_orientacion(robot_x,robot_y,2000,0)
+        giro = calcular_angulo_giro(robot_ang,orientacion_arco)
 
-        '''
-        goal_angle = math.atan2(ball_y - robot0_y, ball_x - robot0_x)
-		
-		heading = abs(goal_angle - robot0.orientation)
-		
-		distance = math.sqrt((ball_x - robot0_x)**2 + (ball_y - robot0_y)**2)
-		
-		if (distance < 0.2):
-			msg.cmd_vel.linear.x = 0
-			msg.cmd_vel.angular.z = 0
-		else:
-			if (heading < 0.2):
-				msg.cmd_vel.linear.x = 0.25
-				msg.cmd_vel.angular.z = 0
-			else:
-				msg.cmd_vel.linear.x = 0.
-				msg.cmd_vel.angular.z = 0.5
-        '''
+
+        return giro
+
 
     def shoot(self):
         #llamado a findgoal
         print("Tirar al arco")
 
 
-class Golero(Player):
-    def shortcut(self):
-        print("???")
+def obtener_orientacion(actual_x, actual_y, destino_x, destino_y):
+    # Calcular la diferencia en coordenadas x e y
+    diff_x = destino_x - actual_x
+    diff_y = destino_y - actual_y
+
+    # Calcular el ángulo de orientación utilizando la función atan2
+    orientacion = np.arctan2(diff_y, diff_x)
+
+    # Converti el ángulo de radianes a grados
+    #orientacion_grados = math.degrees(orientacion)
+
+    print('orientacion', orientacion)
+
+    return orientacion
+
+def calcular_angulo_giro(orientacion_actual, orientacion_arco):
+    # Calcular la diferencia angular entre la orientación actual y la orientación deseada
+    angulo_giro = orientacion_arco - orientacion_actual
+
+    # Asegurarse de que el ángulo de giro esté en el rango de -180 a 180 grados
+    #angulo_giro = (angulo_giro + 180) % 360 - 180
+
+    print('angulo_giro', angulo_giro)
+    return angulo_giro
+
 
 class Referi(Player):
 

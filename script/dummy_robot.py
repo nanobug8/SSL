@@ -8,7 +8,7 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from grsim_ros_bridge_msgs.msg import *
 from krssg_ssl_msgs.msg import *
-from Player import Referi
+from Player import *
 
 
 vision = SSL_DetectionFrame()
@@ -93,7 +93,7 @@ if __name__ == '__main__':
 
     state = 0
 
-    #referi = Referi("Referi")
+    playerBlue0 = Player()
 
     while not rospy.is_shutdown():
 
@@ -150,10 +150,13 @@ if __name__ == '__main__':
             orientacion_arco=obtener_orientacion(robot_x,robot_y,2000,0)
             giro = calcular_angulo_giro(robot_ang,orientacion_arco)
 
+            #playerBlue0.drive_to_goal(robot_x,robot_y,robot_ang)
+
             msg.cmd_vel.angular.z = giro
 
-            if abs(giro < angle_tol):
+            if abs(robot_ang - giro) < angle_tol:
                 state = 3
+                print(state)
             '''
             if np.abs(current_angle - giro) > angle_tol:
                 msg.cmd_vel.angular.z = giro + giro/math.pi
