@@ -106,7 +106,7 @@ class Player:
                     self.state = 0
                     self.stop()
                 else:
-                    self.speed_scale = 0.5
+                    self.speed_scale = 0.3
                     if self.goal_dist[self.id] - self.goal_dist[self.closest_to_goal] > 100 and self.closest_to_goal != self.id:
                         print(self.id, " pasando \n")
                         self.pass_to_mate()
