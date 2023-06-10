@@ -103,10 +103,6 @@ class Player:
         elif self.state == 3:
             self.stop()
 
-    def get_random_point(self,x_min, x_max, y_min, y_max):
-        random_x = random.uniform(x_min, x_max)
-        random_y = random.uniform(y_min, y_max)
-        return random_x, random_y
 
     def intercept(self):
 
@@ -116,22 +112,6 @@ class Player:
             self.msg.kicker = False
 
             self.state = 2
-
-        #if self.ball_dist[self.id] <= 1000:
-
-            #x = (self.x + random_posX) / 2 + amplitude * (random_posX - self.x) * (1 + math.sin(2 * math.pi / period * current_time)) / 2
-            #y = (self.y + random_posY) / 2 + amplitude * (random_posY - self.y) * (1 + math.sin(2 * math.pi / period * current_time)) / 2
-            #self.msg.cmd_vel.linear.x = 0
-            #self.msg.cmd_vel.linear.x = 0.3 * np.cos(angular_intercept - self.yaw)
-            #self.msg.cmd_vel.linear.y = 0.3 * np.sin(angular_intercept - self.yaw)
-            #self.msg.cmd_vel.angular.z = 0
-            #self.msg.cmd_vel.angular.z = angular_intercept - self.yaw
-            #print(x,y)
-
-
-
-            #self.state = 4
-
         else:
             self.state = 0
 
@@ -140,11 +120,17 @@ class Player:
 
     def catch_the_ball(self):
 
-        if (np.abs(self.goal_angle - self.yaw) > self.angle_tolerance):
+        #math.atan2(math.sin(radianes1 - radianes2), math.cos(radianes1 - radianes2))
 
-            self.msg.cmd_vel.angular.z = self.goal_angle - self.yaw
+        if (math.atan2(math.sin( self.ball_angle), math.cos(self.ball_angle)) > self.angle_tolerance):
+             self.msg.cmd_vel.angular.z =  3 * (self.ball_angle - self.yaw)
+
+        elif  (math.atan2(math.sin(- self.ball_angle), math.cos(- self.ball_angle)) > self.angle_tolerance):
+            self.msg.cmd_vel.angular.z =  3 * (  self.ball_angle - self.yaw  )
+            aim = True
         else:
             self.msg.cmd_vel.angular.z = 0.0
+
 
         if self.goal_dist[self.id] > 120:
             self.msg.cmd_vel.linear.x = 0.3 * np.cos(self.goal_angle - self.yaw)
@@ -156,18 +142,8 @@ class Player:
             self.msg.kicker = False
 
         if min(2000, 2000, 1800, 1800) <= self.x <= max(2000, 2000, 1800, 1800) and \
-           min(400, -400, 400, -400) <= self.y <= max(400, -400, 400, -400):
+                min(400, -400, 400, -400) <= self.y <= max(400, -400, 400, -400):
             self.state = 1
-
-        if (np.abs(self.ball_angle - self.yaw) > self.angle_tolerance):
-            self.msg.cmd_vel.angular.z = self.ball_angle - self.yaw
-        else:
-            self.msg.cmd_vel.angular.z = 0.0
-
-        self.msg.cmd_vel.linear.x = 0.0 * np.cos(self.goal_angle - self.yaw)
-        self.msg.cmd_vel.linear.y = 0.0 * np.sin(self.goal_angle - self.yaw)
-        self.msg.dribbler = True
-        self.msg.kicker = False
 
         self.pub.publish(self.msg)
 
@@ -193,7 +169,6 @@ class Player:
             #     state = 1
 
         self.pub.publish(self.msg)
-
 
 
 if __name__ == '__main__':
