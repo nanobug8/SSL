@@ -8,3 +8,6 @@ Run dummy_robot node
 rosrun pria_ssl dummy_robot.py
 
 to run the simulator and three players use the launch file.
+
+
+Watch a demo on https://youtu.be/q14VTiMe2Io
