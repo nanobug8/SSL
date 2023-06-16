@@ -1,6 +1,6 @@
 <launch>
     
-    <!-- <include file="$(find grsim_ros_bridge)/launch/launch.launch"/> -->
+    <include file="$(find grsim_ros_bridge)/launch/launch.launch"/>
     
 
     <node name="Player1" pkg="SSL" type="Player.py" args="blue 3" output="screen"/>
