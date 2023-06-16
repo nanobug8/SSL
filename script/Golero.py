@@ -28,8 +28,12 @@ class Player:
         self.ball_dist = [1e4,1e4,1e4,1e4,1e4]
         self.goal_x = 2050
         self.goal_y = 0
+        self.goal_x_blue = -2050
+        self.goal_y_blue = 0
         self.goal_angle = 0
         self.goal_dist = [0,0,0,0,0]
+        self.goal_angle_blue = 0
+        self.goal_dist_blue = 0
         self.mate_x = [0,0,0,0,0]
         self.mate_y = [0,0,0,0,0]
         self.mate_yaw = [0,0,0,0,0]
@@ -90,6 +94,12 @@ class Player:
         if np.abs(self.goal_y - self.y) > 0:
             self.goal_angle = np.arctan2((self.goal_y - self.y), (self.goal_x - self.x))
 
+        if np.abs(self.goal_y_blue - self.y) > 0:
+            self.goal_angle_blue = np.arctan2((self.goal_y_blue - self.y), (self.goal_x_blue - self.x))
+        
+        self.goal_dist_blue = np.sqrt(np.abs(self.goal_x_blue - self.x)**2 + np.abs(self.goal_y_blue - self.y)**2)
+
+        print("estado golero           ", self.goal_dist_blue)
 
         if self.state == 0:
            self.catch_the_ball()
@@ -101,7 +111,30 @@ class Player:
             self.get_the_ball()
 
         elif self.state == 3:
-            self.stop()
+            self.drive_to_goal()
+
+        
+    def drive_to_goal(self):
+        if np.abs(self.goal_angle_blue - self.yaw) < 0.07 :
+            self.msg.cmd_vel.angular.z = self.goal_angle_blue - self.yaw
+        else:
+            aim = True
+            self.msg.cmd_vel.angular.z = 0.0
+
+        self.speed_scale = 2
+
+        self.msg.cmd_vel.linear.x = self.speed_scale * np.cos(self.goal_angle_blue - self.yaw)
+        self.msg.cmd_vel.linear.y = self.speed_scale * np.sin(self.goal_angle_blue - self.yaw)
+
+        self.msg.dribbler = True
+        self.msg.kicker = False
+
+        if self.goal_dist_blue < 2800:
+            self.msg.dribbler = False
+            self.msg.kicker = True
+            self.state = 0
+
+        self.pub.publish(self.msg)
 
     def get_random_point(self,x_min, x_max, y_min, y_max):
         random_x = random.uniform(x_min, x_max)
@@ -110,7 +143,10 @@ class Player:
 
     def intercept(self):
 
-        if self.ball_dist[self.id] < 700:
+        if self.goal_dist[self.id] > 1000:
+            self.state = 0
+
+        elif self.ball_dist[self.id] < 700:
 
             self.msg.dribbler = True
             self.msg.kicker = False
@@ -160,12 +196,10 @@ class Player:
             self.state = 1
 
         if (np.abs(self.ball_angle - self.yaw) > self.angle_tolerance):
-            self.msg.cmd_vel.angular.z = self.ball_angle - self.yaw
+            self.msg.cmd_vel.angular.z = self.yaw - self.ball_angle
         else:
             self.msg.cmd_vel.angular.z = 0.0
 
-        self.msg.cmd_vel.linear.x = 0.0 * np.cos(self.goal_angle - self.yaw)
-        self.msg.cmd_vel.linear.y = 0.0 * np.sin(self.goal_angle - self.yaw)
         self.msg.dribbler = True
         self.msg.kicker = False
 
@@ -179,7 +213,9 @@ class Player:
         else:
             self.msg.cmd_vel.angular.z = 0.0
 
-        if self.ball_dist[self.id] > 120:
+        if self.goal_dist[self.id] > 1000:
+            self.state = 0
+        elif self.ball_dist[self.id] > 120:
             self.msg.cmd_vel.linear.x = 0.3 * np.cos(self.ball_angle - self.yaw)
             self.msg.cmd_vel.linear.y = 0.3 * np.sin(self.ball_angle - self.yaw)
         else:

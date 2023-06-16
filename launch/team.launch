@@ -6,4 +6,6 @@
     <node name="Player1" pkg="SSL" type="Player.py" args="blue 3" output="screen"/>
     <node name="Player2" pkg="SSL" type="Player.py" args="blue 1" output="screen"/>
 
+    <node name="Goalkeeper" pkg="SSL" type="Golero.py" args="yellow 1" output="screen"/>
+
 </launch>
